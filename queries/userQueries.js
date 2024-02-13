@@ -16,12 +16,30 @@ const pool = new Pool({
 });
 
 router.get("/getusers", (request, response) => {
-  pool.query("SELECT * FROM users ORDER BY id ASC", (error, results) => {
+  pool.query("SELECT * FROM users ORDER BY user_id ASC", (error, results) => {
     if (error) {
       throw error;
     }
     response.status(200).json(results.rows);
   });
+});
+
+router.get("/:id", (request, response) => {
+  const id = parseInt(request.params.id);
+  pool.query(
+    "SELECT * FROM users WHERE user_id = $1",
+    [id],
+    (error, results) => {
+      if (error) {
+        throw error;
+      }
+      if (results.rows.length > 0) {
+        response.status(200).json(results.rows);
+      } else {
+        response.status(404).json({ message: "User not found" });
+      }
+    }
+  );
 });
 
 /*
