@@ -1,15 +1,18 @@
 import pkg from "pg";
 import express from "express";
+import dotenv from "dotenv";
+dotenv.config();
+
 const { Pool } = pkg;
 
 const router = express.Router();
 
 const pool = new Pool({
-  user: "postgres",
-  host: "localhost",
-  database: "DemoDatabase",
-  password: "postgres",
-  port: 5432,
+  user: process.env.user,
+  host: process.env.host,
+  database: process.env.database,
+  password: process.env.password,
+  port: process.env.port,
 });
 
 router.get("/getusers", (request, response) => {
@@ -20,6 +23,7 @@ router.get("/getusers", (request, response) => {
     response.status(200).json(results.rows);
   });
 });
+
 /*
 const getUserById = (request, response) => {
   const id = parseInt(request.params.id);
@@ -72,14 +76,6 @@ const deleteUser = (request, response) => {
     }
     response.status(200).send(`User deleted with ID: ${id}`);
   });
-};
-
-export default {
-  getUsers,
-  getUserById,
-  createUser,
-  updateUser,
-  deleteUser,
 };
 */
 

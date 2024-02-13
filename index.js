@@ -1,5 +1,5 @@
 import express from "express";
-import userRouter from "./queries.js";
+import userRouter from "./queries/userQueries.js";
 import bodyParser from "body-parser";
 const { json, urlencoded } = bodyParser;
 
