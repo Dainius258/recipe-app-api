@@ -59,6 +59,17 @@ router.put("/newuser", (request, response) => {
 router.put("/updateuser", (request, response) => {
   const id = parseInt(request.params.id);
   const { username, password, email } = request.body;
+
+  pool.query(
+    "UPDATE users SET username = $1, password = $2, email = $3 WHERE id = $4",
+    [username, password, email, id],
+    (error, results) => {
+      if (error) {
+        throw error;
+      }
+      response.status(200).send(`User modified with ID: ${id}`);
+    }
+  );
 });
 /*
 const updateUser = (request, response) => {

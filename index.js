@@ -1,5 +1,6 @@
 import express from "express";
 import userRouter from "./queries/userQueries.js";
+import recipeRouter from "./queries/recipeQueries.js";
 import bodyParser from "body-parser";
 const { json, urlencoded } = bodyParser;
 
@@ -18,6 +19,7 @@ app.get("/", (request, response) => {
 });
 
 app.use("/users", userRouter);
+app.use("/recipes", recipeRouter);
 
 app.listen(port, () => {
   console.log(`App running on port ${port}.`);
