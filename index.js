@@ -1,8 +1,9 @@
 import express from "express";
 import userRouter from "./routes/userRoutes.js";
-import recipeRouter from "./routes/recipeRoutes.js";
-import registerRouter from "./routes/registerRoutes.js";
+import recipeRouter from "./routes/recipesRoutes.js";
+import authRouter from "./routes/userAuthRoutes.js";
 import bodyParser from "body-parser";
+import authenticateJWT from "./middleware/authMiddleware.js";
 const { json, urlencoded } = bodyParser;
 
 const app = express();
@@ -15,13 +16,15 @@ app.use(
   })
 );
 
+//app.use(authenticateJWT(JWT_SECRET));
+
 app.get("/", (request, response) => {
   response.json({ info: "Node.js, Express, and Postgres API" });
 });
 
 app.use("/users", userRouter);
 app.use("/recipes", recipeRouter);
-app.use("/api", registerRouter);
+app.use("/api", authRouter);
 
 app.listen(port, () => {
   console.log(`App running on port ${port}.`);
