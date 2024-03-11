@@ -9,13 +9,11 @@ const router = express.Router();
 
 router.post("/register", async (request, response) => {
   const { username, password, email } = request.body;
-
-  if (!validator.isEmail(email)) {
-    return response.status(400).json({ message: "Invalid email format" });
-  }
-
   if (!email || !password || !username) {
-    return respond.status(400).json({ message: "*Fill all the fields" });
+    return response.status(400).json({ message: "*Fill all the fields" });
+  }
+  if (!validator.isEmail(email)) {
+    return response.status(400).json({ message: "*Invalid email format" });
   }
   try {
     const existingUser = await db("users")
@@ -25,11 +23,11 @@ router.post("/register", async (request, response) => {
     if (existingUser) {
       return response
         .status(400)
-        .json({ message: "Username or email already exists" });
+        .json({ message: `*Username or email already exists` });
     }
     const hashedPassword = await bcrypt.hash(password, 10);
     await db("users").insert({ username, password: hashedPassword, email });
-    response.status(201).send(`User registered`);
+    response.status(201).json({ message: `User registered` });
   } catch (error) {
     response.status(500).json({ error: error.message });
   }
