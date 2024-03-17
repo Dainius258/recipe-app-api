@@ -72,21 +72,17 @@ router.post("/login", async (request, response) => {
 });
 
 router.post("/protected", (request, response) => {
-  // Get the JWT token from the requestuest headers
   const token = request.body.token;
   if (!token) {
     return response.status(401).json({ message: "No token provided" });
   }
 
-  // Verify and decode the JWT token
   jwt.verify(token, JWT_SECRET, (err, decoded) => {
     if (err) {
       return response
         .status(403)
         .json({ message: "Failed to authenticate token" });
     }
-
-    // Authentication successful, respond with user's information
     response.json({ user: decoded });
   });
 });
