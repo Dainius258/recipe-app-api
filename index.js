@@ -1,6 +1,6 @@
 import express from "express";
 import userRouter from "./routes/userRoutes.js";
-import recipeRouter from "./routes/recipesRoutes.js";
+import recipeRouter from "./routes/recipeRoutes.js";
 import authRouter from "./routes/userAuthRoutes.js";
 import bodyParser from "body-parser";
 import authenticateJWT from "./middleware/authMiddleware.js";
@@ -23,7 +23,7 @@ app.get("/", (request, response) => {
 });
 
 app.use("/users", userRouter);
-app.use("/recipes", recipeRouter);
+app.use("/api", recipeRouter);
 app.use("/api", authRouter);
 
 app.listen(port, () => {

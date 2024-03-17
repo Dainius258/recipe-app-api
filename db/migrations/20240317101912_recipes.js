@@ -9,7 +9,7 @@ export function up(knex) {
     table.string("title").notNullable();
     table.text("image").notNullable();
     table.specificType("ingredients", "text[]");
-    table.string("guide").notNullable();
+    table.text("guide").notNullable();
     table.integer("total_time_minutes").notNullable();
     table.integer("servings").notNullable();
     table.float("rating");
