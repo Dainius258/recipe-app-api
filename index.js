@@ -9,10 +9,15 @@ const { json, urlencoded } = bodyParser;
 const app = express();
 const port = 3000;
 
-app.use(json());
+app.use(
+  json({
+    limit: "6mb",
+  })
+);
 app.use(
   urlencoded({
     extended: true,
+    limit: "6mb",
   })
 );
 

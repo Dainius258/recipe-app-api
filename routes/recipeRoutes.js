@@ -57,6 +57,7 @@ router.post("/newrecipe", async (request, response) => {
     });
     response.status(201).json({ message: `Recipe added` });
   } catch (error) {
+    console.error(error.stack);
     response.status(500).json({ error: error.message });
   }
 });

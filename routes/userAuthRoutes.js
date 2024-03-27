@@ -5,6 +5,8 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import authenticateJWT from "../middleware/authMiddleware.js";
 import validator from "validator";
+import dotenv from "dotenv";
+dotenv.config();
 
 const db = knex(knexConfig.development);
 const router = express.Router();
@@ -67,6 +69,7 @@ router.post("/login", async (request, response) => {
       response.status(500).json({ message: "Invalid username or password" });
     }
   } catch (error) {
+    console.error(error.stack);
     response.status(500).json({ error: error.message });
   }
 });
