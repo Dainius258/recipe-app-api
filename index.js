@@ -2,6 +2,7 @@ import express from "express";
 import userRouter from "./routes/userRoutes.js";
 import recipeRouter from "./routes/recipeRoutes.js";
 import authRouter from "./routes/userAuthRoutes.js";
+import tagRouter from "./routes/tagRoutes.js";
 import bodyParser from "body-parser";
 import authenticateJWT from "./middleware/authMiddleware.js";
 const { json, urlencoded } = bodyParser;
@@ -30,6 +31,7 @@ app.get("/", (request, response) => {
 app.use("/users", userRouter);
 app.use("/api", recipeRouter);
 app.use("/api", authRouter);
+app.use("/api", tagRouter);
 
 app.listen(port, () => {
   console.log(`App running on port ${port}.`);
