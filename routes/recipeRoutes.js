@@ -19,6 +19,63 @@ router.get("/getrecipes", (request, response) => {
       response.status(401).send(error);
     });
 });
+
+router.post("/newrecipe", async (request, response) => {
+  const {
+    user_id,
+    title,
+    image,
+    ingredients,
+    guide,
+    total_time_minutes,
+    servings,
+    tag_id,
+  } = request.body;
+
+  if (
+    !user_id ||
+    !title ||
+    !image ||
+    !ingredients ||
+    !guide ||
+    !total_time_minutes ||
+    !servings ||
+    !tag_id
+  ) {
+    return response.status(400).json({ message: "Missing fields" });
+  }
+
+  const rating = 0.0;
+
+  try {
+    const insertedData = await db("recipes")
+      .insert({
+        user_id,
+        title,
+        image,
+        ingredients,
+        guide,
+        total_time_minutes,
+        servings,
+        rating,
+      })
+      .returning("id");
+
+    console.log(insertedData[0]);
+    await db("recipe_tags").insert({
+      tag_id,
+      recipe_id: insertedData[0].id,
+    });
+
+    return response.status(201).json({ message: `Recipe added` });
+  } catch (error) {
+    console.error(error.stack);
+    return response.status(500).json({ error: error.message });
+  }
+});
+
+// WITHOUT TAGS
+/*
 router.post("/newrecipe", async (request, response) => {
   const {
     user_id,
@@ -60,6 +117,5 @@ router.post("/newrecipe", async (request, response) => {
     console.error(error.stack);
     response.status(500).json({ error: error.message });
   }
-});
-
+});*/
 export default router;
