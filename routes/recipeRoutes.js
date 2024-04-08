@@ -29,7 +29,7 @@ router.post("/newrecipe", async (request, response) => {
     guide,
     total_time_minutes,
     servings,
-    tag_id,
+    tag_ids,
   } = request.body;
 
   if (
@@ -40,7 +40,8 @@ router.post("/newrecipe", async (request, response) => {
     !guide ||
     !total_time_minutes ||
     !servings ||
-    !tag_id
+    !tag_ids ||
+    tag_ids.length === 0
   ) {
     return response.status(400).json({ message: "Missing fields" });
   }
@@ -61,10 +62,21 @@ router.post("/newrecipe", async (request, response) => {
       })
       .returning("id");
 
-    await db("recipe_tags").insert({
-      tag_id,
-      recipe_id: insertedData[0].id,
+    //console.log(tag_ids);
+    const recipeId = insertedData[0].id;
+    const insertPromises = tag_ids.map(async (tag_id) => {
+      await db("recipe_tags").insert({
+        tag_id,
+        recipe_id: recipeId,
+      });
     });
+
+    await Promise.all(insertPromises);
+    /*
+    await db("recipe_tags").insert({
+      recipe_tags,
+      recipe_id: insertedData[0].id,
+    });*/
 
     return response.status(201).json({ message: `Recipe added` });
   } catch (error) {
