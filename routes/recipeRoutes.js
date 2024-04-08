@@ -61,7 +61,6 @@ router.post("/newrecipe", async (request, response) => {
       })
       .returning("id");
 
-    console.log(insertedData[0]);
     await db("recipe_tags").insert({
       tag_id,
       recipe_id: insertedData[0].id,

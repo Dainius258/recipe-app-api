@@ -5,6 +5,16 @@ import knex from "knex";
 const db = knex(knexConfig.development);
 const router = express.Router();
 
+router.get("/gettags", (request, response) => {
+  db("tag")
+    .then((tag) => {
+      response.status(200).json(tag);
+    })
+    .catch((error) => {
+      response.status(401).send(error);
+    });
+});
+
 router.post("/newtag", async (request, response) => {
   const { tag_name } = request.body;
 
