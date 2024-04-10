@@ -20,6 +20,25 @@ router.get("/getrecipes", (request, response) => {
     });
 });
 
+router.post("/getfavouriterecipes", (request, response) => {
+  const { user_id } = request.body;
+  db("favourite")
+    .where("user_id", user_id)
+    .then((favourites) => {
+      const favoritedRecipeIds = favourites.map(
+        (favourite) => favourite.recipe_id
+      );
+      return db("recipes").whereIn("id", favoritedRecipeIds);
+    })
+    .then((favoritedRecipes) => {
+      return response.status(200).json(favoritedRecipes);
+    })
+    .catch((error) => {
+      console.log(error);
+      return response.status(500).json({ message: error });
+    });
+});
+
 router.post("/newrecipe", async (request, response) => {
   const {
     user_id,
@@ -72,11 +91,6 @@ router.post("/newrecipe", async (request, response) => {
     });
 
     await Promise.all(insertPromises);
-    /*
-    await db("recipe_tags").insert({
-      recipe_tags,
-      recipe_id: insertedData[0].id,
-    });*/
 
     return response.status(201).json({ message: `Recipe added` });
   } catch (error) {
