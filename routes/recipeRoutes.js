@@ -20,6 +20,16 @@ router.get("/getrecipes", (request, response) => {
     });
 });
 
+router.get("/recipe/:id", async (request, response) => {
+  try {
+    const id = parseInt(request.params.id);
+    const recipe = await db("recipes").where("id", id).first();
+    return response.status(200).json(recipe);
+  } catch (error) {
+    return response.status(500).json({ error: error.message });
+  }
+});
+
 router.post("/getfavouriterecipes", (request, response) => {
   const { user_id } = request.body;
   db("favourite")
