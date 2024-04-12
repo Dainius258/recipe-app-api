@@ -94,8 +94,9 @@ router.post("/newrecipe", async (request, response) => {
     //console.log(tag_ids);
     const recipeId = insertedData[0].id;
     const insertPromises = tag_ids.map(async (tag_id) => {
+      const tagIdInteger = parseInt(tag_id);
       await db("recipe_tags").insert({
-        tag_id,
+        tag_id: tagIdInteger,
         recipe_id: recipeId,
       });
     });
