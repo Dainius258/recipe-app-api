@@ -10,7 +10,7 @@ router.post("/getfavourites", async (request, response) => {
   try {
     const favourites = await db("favourite").where("user_id", user_id);
     //console.log(favourites);
-    response.status(200).json(favourites);
+    return response.status(200).json(favourites);
   } catch (error) {
     console.log(error);
     return response.status(500).json({ error: error.message });
@@ -21,7 +21,7 @@ router.post("/newfavourite", async (request, response) => {
   const { user_id, recipe_id } = request.body;
   try {
     await db("favourite").insert({ user_id, recipe_id });
-    response.status(201).send(`Favourite added`);
+    response.status(201).send({ message: `Favourite added` });
   } catch (error) {
     return response.status(500).json({ error: error.message });
   }
@@ -34,7 +34,7 @@ router.post("/deletefavourite", async (request, response) => {
       .where("user_id", user_id)
       .where("recipe_id", recipe_id)
       .del();
-    response.status(201).send(`Favourite deleted`);
+    return response.status(201).send({ message: `Favourite deleted` });
   } catch (error) {
     return response.status(500).json({ error: error.message });
   }
