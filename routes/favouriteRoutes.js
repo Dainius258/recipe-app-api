@@ -10,9 +10,11 @@ router.post("/getfavourites", async (request, response) => {
   try {
     const favourites = await db("favourite").where("user_id", user_id);
     //console.log(favourites);
+    if (favourites.length == 0) {
+      return response.status(404).json({ message: "User has no favourites" });
+    }
     return response.status(200).json(favourites);
   } catch (error) {
-    console.log(error);
     return response.status(500).json({ error: error.message });
   }
 });
