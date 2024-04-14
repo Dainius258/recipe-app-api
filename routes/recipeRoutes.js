@@ -10,6 +10,61 @@ const db = knex(knexConfig.development);
 const router = express.Router();
 //const JWT_SECRET = process.env.JWT_SECRET;
 
+router.put("/rate/:id", async (request, response) => {
+  // This needs better authorization
+  // Need check if user already rated it
+  try {
+    const recipeId = request.params.id;
+    const { rating, userId } = request.body;
+
+    if (rating == null || userId == null) {
+      return response.status(404).json({ message: "Missing rating or user" });
+    }
+
+    const existingUser = await db("users").where({ id: userId }).first();
+    if (!existingUser) {
+      return response.status(404).json({ message: "User not found" });
+    }
+
+    const existingRecipe = await db("recipes")
+      .select("likes", "dislikes")
+      .where({ id: recipeId })
+      .first();
+    if (!existingRecipe) {
+      return response.status(404).json({ message: "Recipe not found" });
+    }
+
+    if (rating == true) {
+      existingRecipe.likes = existingRecipe.likes + 1;
+      await db("recipes")
+        .where({ id: recipeId })
+        .update({ likes: existingRecipe.likes });
+    } else {
+      existingRecipe.dislikes = existingRecipe.dislikes + 1;
+      await db("recipes")
+        .where({ id: recipeId })
+        .update({ dislikes: existingRecipe.dislikes });
+    }
+
+    const newRating = parseFloat(
+      (
+        (existingRecipe.likes /
+          (existingRecipe.likes + existingRecipe.dislikes)) *
+        100.0
+      ).toFixed(2)
+    );
+
+    //console.log(newRating);
+
+    await db("recipes").where({ id: recipeId }).update({ rating: newRating });
+    return response
+      .status(200)
+      .send({ message: `Recipe rated`, newRating: newRating });
+  } catch (error) {
+    return response.status(500).json({ error: error.message });
+  }
+});
+
 router.get("/getrecipes", (request, response) => {
   db("recipes")
     .then((recipes) => {
@@ -18,6 +73,28 @@ router.get("/getrecipes", (request, response) => {
     .catch((error) => {
       response.status(401).send(error);
     });
+});
+
+router.get("/getuserrecipes/:id", async (request, response) => {
+  try {
+    const userId = request.params.id;
+    if (!userId) {
+      return response.status(404).json({ message: "Missing user attribute" });
+    }
+
+    const existingUser = await db("users").where({ id: userId }).first();
+    if (!existingUser) {
+      return response.status(404).json({ message: "User not found" });
+    }
+
+    const recipes = await db("recipes").where({ user_id: userId });
+    if (recipes.length == 0) {
+      return response.status(404).json({ message: "User has no recipes" });
+    }
+    return response.status(200).json(recipes);
+  } catch (error) {
+    return response.status(500).json({ error: error.message });
+  }
 });
 
 router.get("/recipe/:id", async (request, response) => {
