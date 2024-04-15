@@ -107,6 +107,49 @@ router.get("/recipe/:id", async (request, response) => {
   }
 });
 
+router.get("/recipesbyids", async (request, response) => {
+  try {
+    if (!request.query.ids) {
+      return response.status(400).json({ error: "IDs parameter is missing" });
+    }
+    const ids = request.query.ids.split(",").map((id) => parseInt(id));
+    const recipes = await db("recipes").whereIn("id", ids);
+    return response.status(200).json(recipes);
+  } catch (error) {
+    return response.status(500).json({ error: error.message });
+  }
+});
+
+router.get("/recipesbytagids", async (request, response) => {
+  try {
+    if (!request.query.ids || typeof request.query.ids !== "string") {
+      return response
+        .status(400)
+        .json({ error: "IDs parameter is not a string" });
+    }
+
+    if (!request.query.ids) {
+      return response.status(400).json({ error: "IDs parameter is missing" });
+    }
+
+    const ids = request.query.ids
+      .toString()
+      .split(",")
+      .map((id) => parseInt(id));
+    const recipes = await db("recipe_tags")
+      .select("recipe_id")
+      .whereIn("tag_id", ids);
+    if (recipes == 0) {
+      return response.status(404).json({ error: "Recipe ID's not found" });
+    }
+
+    return response.status(200).json(recipes.map((recipe) => recipe.recipe_id));
+  } catch (error) {
+    console.log(error);
+    return response.status(500).json({ error: error.message });
+  }
+});
+
 router.post("/getfavouriterecipes", (request, response) => {
   const { user_id } = request.body;
   db("favourite")
@@ -121,7 +164,6 @@ router.post("/getfavouriterecipes", (request, response) => {
       return response.status(200).json(favoritedRecipes);
     })
     .catch((error) => {
-      console.log(error);
       return response.status(500).json({ message: error });
     });
 });
